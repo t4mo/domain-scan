@@ -50,12 +50,34 @@ RUN \
       pkg-config=0.26-1ubuntu4 \
       sqlite3=3.8.2-1ubuntu2.1 \
 
+      # Additional dependencies for python-build
+      libbz2-dev \
+      llvm \
+      libncursesw5-dev \
+
     # Clean up packages.
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 ###
 ## Python
+
+ENV PYENV_FILE v20160310.zip
+ENV PYENV_ROOT /opt/pyenv
+
+RUN wget https://github.com/yyuu/pyenv/archive/${PYENV_FILE} \
+      --no-verbose \
+  && unzip $PYENV_FILE -d $PYENV_ROOT \
+  && mv $PYENV_ROOT/pyenv-20160310/* $PYENV_ROOT/ \
+  && rm -r $PYENV_ROOT/pyenv-20160310
+
+ENV PATH $PYENV_ROOT/bin:$PATH
+
+RUN echo 'eval "$(pyenv init -)"' >> /etc/profile \
+    && eval "$(pyenv init -)" \
+    && pyenv install 2.7.11 \
+    && pyenv install 3.5.0 \
+    && pyenv local 3.5.0
 
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
