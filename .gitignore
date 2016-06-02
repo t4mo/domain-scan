@@ -11,3 +11,4 @@ __pycache__
 .env
 *.swp
 /node_modules
+.env
